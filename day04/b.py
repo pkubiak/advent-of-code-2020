@@ -1,10 +1,10 @@
 import sys, re
 
 VALIDATIONS = {
-    'byr': lambda v: re.fullmatch('\d+', v) and 1920 <= int(v) <= 2002,
-    'iyr': lambda v: re.fullmatch('\d+', v) and 2010 <= int(v) <= 2020,
-    'eyr': lambda v: re.fullmatch('\d+', v) and 2020 <= int(v) <= 2030,
-    'hgt': lambda v: re.fullmatch('\d+(in|cm)', v) and ('in' in v and 59 <= int(v[:-2]) <= 76) or ('cm' in v and 150 <= int(v[:-2]) <= 193),
+    'byr': lambda v: v.isdecimal() and 1920 <= int(v) <= 2002,
+    'iyr': lambda v: v.isdecimal() and 2010 <= int(v) <= 2020,
+    'eyr': lambda v: v.isdecimal() and 2020 <= int(v) <= 2030,
+    'hgt': lambda v: v[:-2].isdecimal() and ('in' in v and 59 <= int(v[:-2]) <= 76) or ('cm' in v and 150 <= int(v[:-2]) <= 193),
     'hcl': lambda v: re.fullmatch('#[0-9a-f]{6}', v),
     'ecl': lambda v: v in {'amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'},
     'pid': lambda v: re.fullmatch('\d{9}', v),
