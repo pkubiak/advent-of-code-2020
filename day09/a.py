@@ -1,23 +1,17 @@
 import sys
+from itertools import combinations
 
 data = []
+
 def check(x):
-    for a in range(25):
-        for b in range(a+1, 25):
-            if data[a] + data[b] == x:
-                return True
-    return False
+    return x in map(sum, combinations(data, 2))
+
 
 for line in sys.stdin:
     x = int(line.strip())
 
-    if len(data) == 25:
-        if not check(x):
-            print(x)
-            break
-        data = data[1:]
+    if len(data) == 25 and not check(x):
+        print(x)
+        break
     
-    data.append(x)
-    
-
-        
+    data = (data + [x])[-25:]
