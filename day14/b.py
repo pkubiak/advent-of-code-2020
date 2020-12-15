@@ -3,8 +3,6 @@ import sys, re, itertools
 mask = None
 mem = {}
 
-
-
 for line in sys.stdin.read().split("\n"):
     if m := re.fullmatch("mask = ([X01]{36})", line):
         mask = m.group(1)
@@ -22,11 +20,5 @@ for line in sys.stdin.read().split("\n"):
             ])
             addr2 = int(addr2, 2)
             mem[addr2] = value
-
-        # res = ''.join([
-        #     v if m == 'X' else m
-        #     for m, v in zip(mask, value)
-        # ])
-        # mem[int(addr)] = int(res, 2)
 
 print(sum(mem.values()))
