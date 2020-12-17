@@ -1,29 +1,22 @@
 import sys, itertools
+from collections import Counter
+
 
 def simulate(state):
-    cells = set()
+    counts = Counter()
+    diffs = set(itertools.product([-1,0,1], repeat=3)) - {(0,0,0)}
+
     for x,y,z in state:
-        cells.update(
+        counts.update(
             (x+dx, y+dy, z+dz)
-            for dx, dy, dz in itertools.product([-1,0,1], repeat=3)
+            for dx, dy, dz in diffs
         )
 
-    new_state = set()
-    for x, y, z in cells:
-        total = sum(
-            (x+dx, y+dy, z+dz) in state
-            for dx, dy, dz in itertools.product([-1,0,1], repeat=3)
-            if (dx!=0 or dy!=0 or dz!=0)
-        )
-        if (x,y,z) in state:
-            if 2 <= total <= 3:
-                new_state.add((x,y,z))
-        else:
-            if total == 3:
-                new_state.add((x,y,z))
-
-    return new_state
-
+    return {
+        cell 
+        for cell in counts
+        if counts[cell] == 3 or (counts[cell] == 2 and cell in state)
+    }
 
 
 space = set()
@@ -34,6 +27,6 @@ for y, line in enumerate(sys.stdin.read().split("\n")):
 
 
 for i in range(6):
+    space = simulate(space)
 
-    space =simulate(space)
-    print(len(space))
+print(len(space))

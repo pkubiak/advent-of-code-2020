@@ -1,39 +1,33 @@
 import sys, itertools
+from collections import Counter
 
-def simulate(state):
-    cells = set()
-    for x,y,z,t in state:
-        cells.update(
-            (x+dx, y+dy, z+dz, t+dt)
-            for dx, dy, dz, dt in itertools.product([-1,0,1], repeat=4)
+
+def simulate(state, N):
+    counts = Counter()
+    diffs = set(itertools.product([-1,0,1], repeat=N)) - {(0,)*N}
+
+    for coord in state:
+        counts.update(
+            tuple(map(sum, zip(coord, diff)))
+            for diff in diffs
         )
 
-    new_state = set()
-    for x, y, z, t in cells:
-        total = sum(
-            (x+dx, y+dy, z+dz, t+dt) in state
-            for dx, dy, dz, dt in itertools.product([-1,0,1], repeat=4)
-            if (dx!=0 or dy!=0 or dz!=0 or dt!=0)
-        )
-        if (x,y,z,t) in state:
-            if 2 <= total <= 3:
-                new_state.add((x,y,z,t))
-        else:
-            if total == 3:
-                new_state.add((x,y,z,t))
+    return {
+        cell 
+        for cell in counts
+        if counts[cell] == 3 or (counts[cell] == 2 and cell in state)
+    }
 
-    return new_state
+N = 4
 
-
-
-space = set()
+state = set()
 for y, line in enumerate(sys.stdin.read().split("\n")):
     for x, char in enumerate(line):
         if char == '#':
-            space.add((x,y,0,0))
+            state.add((x, y) + (0,)*(N-2))
 
 
 for i in range(6):
+    state = simulate(state, N)
 
-    space =simulate(space)
-    print(len(space))
+print(len(state))
