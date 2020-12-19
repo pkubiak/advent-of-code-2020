@@ -2,31 +2,32 @@ import sys, itertools
 from collections import Counter
 
 
-def simulate(state):
-    counts = Counter()
-    diffs = set(itertools.product([-1,0,1], repeat=3)) - {(0,0,0)}
+NEIGHBORES = set(itertools.product([-1,0,1], repeat=3)) - {(0,0,0)} 
 
-    for x,y,z in state:
+def simulate(active_cubes):
+    counts = Counter()
+
+    for x, y, z in active_cubes:
         counts.update(
-            (x+dx, y+dy, z+dz)
-            for dx, dy, dz in diffs
+            (x + dx, y + dy, z + dz)
+            for dx, dy, dz in NEIGHBORES
         )
 
     return {
         cell 
         for cell in counts
-        if counts[cell] == 3 or (counts[cell] == 2 and cell in state)
+        if counts[cell] == 3 or (counts[cell] == 2 and cell in active_cubes)
     }
 
 
-space = set()
-for y, line in enumerate(sys.stdin.read().split("\n")):
-    for x, char in enumerate(line):
+active_cubes = set()
+for y, line in enumerate(sys.stdin):
+    for x, char in enumerate(line.strip()):
         if char == '#':
-            space.add((x,y,0))
+            active_cubes.add((x,y,0))
 
 
 for i in range(6):
-    space = simulate(space)
+    active_cubes = simulate(active_cubes)
 
-print(len(space))
+print(len(active_cubes))
