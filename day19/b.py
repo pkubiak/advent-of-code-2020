@@ -25,9 +25,11 @@ def build_regex(name):
             else:
                 regex += build_regex(term)
         rules.append(regex)
+
     if len(rules) == 1 and len(rules[0]) == 1:
         return rules[0]
-    return "(" + "|".join(rules) + ")"
+
+    return "(?:" + "|".join(rules) + ")"
 
 regex = re.compile(build_regex('0'))
 print(regex.pattern)
