@@ -1,65 +1,56 @@
-from itertools import product
+def load_cubes(path):
+    """Load data"""
+    cubes = []
+    with open(path) as file:
+        for line in file:
+            op, rest = line.strip().split(" ")
+            coords = [tuple(map(int, i.split("=")[1].split(".."))) for i in rest.split(",")]
+            cubes.append(coords + [op])
 
-# Load Data
-items = []
-with open("input.txt") as file:
-    for line in file:
-        op, rest = line.strip().split(" ")
-        coords = [tuple(map(int, i.split("=")[1].split(".."))) for i in rest.split(",")]
-        items.append(coords + [op])
-
-
-def length_z(items, pool):
-    events_z, length = [], 0
-    for id in pool:
-        events_z.append((items[id][2][0], 1, id))
-        events_z.append((items[id][2][1]+1, -1, id))
-    events_z.sort()
-    pool = set()
-
-    for i, (z, op, id) in enumerate(events_z):
-        if i > 0 and pool:
-            max_id = max(pool)
-            length += (events_z[i][0] - events_z[i-1][0]) * (items[max_id][3] == "on")
-        if op == 1:
-            pool.add(id)
-        else:
-            pool.remove(id)
-    return length
+    return cubes
 
 
-def area_yz(items, pool):
-    events_y, area = [], 0
-    for id in pool:
-        events_y.append((items[id][1][0], 1, id))
-        events_y.append((items[id][1][1]+1, -1, id))
-    pool = set()
-    events_y.sort()
-    for i, (y, op, id) in enumerate(events_y):
-        if i > 0:
-            area += length_z(items, pool) * (events_y[i][0] - events_y[i-1][0])
-        if op == 1:
-            pool.add(id)
-        else:
-            pool.remove(id)
-        
-    return area
+def recursive_sweep(cubes, ids, dim, fn):
+    """Recursive Sweeping over consecutive dimensions"""
+
+    events, result = [], 0
+
+    for id in ids:
+        events.append((cubes[id][dim][0], 1, id)) # event start
+        events.append((cubes[id][dim][1]+1, -1, id)) # event end
+    ids = set()
+
+    events.sort()
+    for i, (pos, op, id) in enumerate(events):
+        if i > 0 and ids:
+            result += (recursive_sweep(cubes, ids, dim-1, fn) if dim else fn(cubes, ids)) * (pos - events[i-1][0])
+        (ids.add if op==1 else ids.remove)(id)
+
+    return result
 
 
-def volume_xyz(items):
-    events_x, pool, volume = [], set(), 0
-    for i, item in enumerate(items):
-        events_x.append((item[0][0], 1, i))
-        events_x.append((item[0][1]+1, -1, i))
+def filter_cubes(cubes):
+    """Cut cubes to -50..50 box"""
+    for *coords, op in cubes:
+        coords = [
+            (max(dim[0], -50), min(dim[1], 50))
+            for dim in coords
+        ]
+        if all(dim[0]<=dim[1] for dim in coords):
+            yield coords + [op]
 
-    events_x.sort()
-    for i, (x, op, id) in enumerate(events_x):
-        if i > 0:
-            volume += area_yz(items, pool) * (events_x[i][0] - events_x[i-1][0])
-        if op == 1:
-            pool.add(id)
-        else:
-            pool.remove(id)
-    return volume
 
-print(volume_xyz(items))
+def part_a(cubes):
+    filtered_cubes = list(filter_cubes(cubes))
+    return part_b(filtered_cubes)
+
+def part_b(cubes):    
+    def fn(items, ids):
+        return items[max(ids)][3] == 'on'
+    return recursive_sweep(cubes, range(len(cubes)), 2, fn)
+
+
+if __name__ == '__main__':
+    cubes = load_cubes("input.txt")
+    print("a:", part_a(cubes))
+    print("b:", part_b(cubes))
