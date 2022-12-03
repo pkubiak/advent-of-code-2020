@@ -1,10 +1,11 @@
-def priority(c):
-    return ord(c) - ord('a') + 1 if 'a'<=c<='z' else ord(c) - ord('A') + 27
+from string import ascii_letters
 
+def priority(c):
+    return ascii_letters.index(c) + 1
 
 with open("input.txt") as file:
     score_a = score_b = 0
-    lines = [line.strip() for line in file]
+    lines = file.read().splitlines()
 
     for line in lines:
         pivot = len(line) // 2
