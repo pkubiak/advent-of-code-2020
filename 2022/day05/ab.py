@@ -1,4 +1,4 @@
-def simulate(text ,order):
+def simulate(text, order):
     init, moves = text.split("\n\n")
 
     init = init.split("\n")[:-1]

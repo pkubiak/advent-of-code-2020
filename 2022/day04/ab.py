@@ -3,7 +3,7 @@ with open("input.txt") as file:
     for line in file:
         a0, a1, b0, b1 = map(int, line.replace(",","-").split("-"))
 
-        if a0 <= b0 <= b1 <= a1 or b0 <= a0 <= a1 <= b1:
+        if (a0 <= b0 <= b1 <= a1) or (b0 <= a0 <= a1 <= b1):
             count_a += 1
         
         if not (a1 < b0 or b1 < a0):
