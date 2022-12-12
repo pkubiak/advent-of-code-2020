@@ -1,6 +1,5 @@
 lines = open("input.txt").read().splitlines()
-x = 1
-out = []
+x, out = 1, []
 
 for line in lines:
     match line.split():

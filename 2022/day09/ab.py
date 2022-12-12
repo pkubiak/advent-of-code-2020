@@ -2,7 +2,7 @@ DIRS = {
     "U": (0, -1), "D": (0, 1), "L": (-1, 0), "R": (1, 0)
 }
 
-def get_diff(p0, p1):
+def update(p0, p1):
     Hx, Hy = p0
     Tx, Ty = p1
 
@@ -31,7 +31,7 @@ for line in open("input.txt").readlines():
     for _ in range(n):
         positions[0] = positions[0][0] + DIRS[d][0], positions[0][1] + DIRS[d][1]
         for i in range(1, N):
-            positions[i] = get_diff(positions[i-1], positions[i])
+            positions[i] = update(positions[i-1], positions[i])
             visited[i][positions[i]] = True
 
 print("a:", len(visited[1]))
