@@ -1,15 +1,3 @@
-mapa = [list(line.strip()) for line in open("input.txt")]
-W, H = len(mapa[0]), len(mapa)
-
-for y in range(H):
-    for x in range(W):
-        if mapa[y][x] == 'S':
-            start = (x,y)
-            mapa[y][x] = 'a'
-        if mapa[y][x] == 'E':
-            end = (x,y)
-            mapa[y][x] = 'z'
-
 def bfs(mapa, starts, end):
     queue = list(starts)
     visited = {s:0 for s in starts}
@@ -17,15 +5,21 @@ def bfs(mapa, starts, end):
     while queue:
         pos, *queue = queue
         for dx, dy in [(0,1), (0,-1), (1,0), (-1,0)]:
-            x = pos[0]+dx
-            y = pos[1]+dy
-            if 0<=x<W and 0<=y<H and (x,y) not in visited and (ord(mapa[y][x]) <= ord(mapa[pos[1]][pos[0]])+1):
-                visited[(x,y)] = visited[pos] + 1
-                queue.append((x,y))
+            new = pos[0]+dx, pos[1]+dy
+            if (new in mapa) and (new not in visited) and (ord(mapa[new]) <= ord(mapa[pos]) + 1):
+                visited[new] = visited[pos] + 1
+                queue.append(new)
 
     return visited.get(end)
 
 
+with open("input.txt") as file:
+    mapa = {(x,y): k for y, line in enumerate(file) for x, k in enumerate(line.strip())}
+
+find = lambda c: [k for k, v in mapa.items() if v == c]
+
+mapa[start := find('S')[0]] = 'a'
+mapa[end := find('E')[0]] = 'z'
+
 print("a:", bfs(mapa, [start], end))
-print("b:", bfs(mapa, [(x,y) for x in range(W) for y in range(H) if mapa[y][x]=='a'], end))
-            
+print("b:", bfs(mapa, find('a'), end))
