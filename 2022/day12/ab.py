@@ -14,7 +14,11 @@ def bfs(mapa, starts, end):
 
 
 with open("input.txt") as file:
-    mapa = {(x,y): k for y, line in enumerate(file) for x, k in enumerate(line.strip())}
+    mapa = {
+        (x,y): k 
+        for y, line in enumerate(file) 
+        for x, k in enumerate(line.strip())
+    }
 
 find = lambda c: [k for k, v in mapa.items() if v == c]
 
