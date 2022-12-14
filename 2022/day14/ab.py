@@ -1,55 +1,48 @@
-text = open("input.txt").read()
+sgn = lambda x: x//abs(x) if x else 0
 
-mapa = {}
+def parse_input(text):
+    for line in text.split("\n"):
+        items = [tuple(map(int, item.split(","))) for item in line.split(" -> ")]
 
-def sgn(x):
-    if x>0:return 1
-    if x<0:return -1
-    return 0
+        x, y = items[0]
+        for x2, y2 in items[1:]:
+            dx, dy = sgn(x2 - x), sgn(y2 - y)
+            while (x, y) != (x2, y2):
+                yield x,y
+                x += dx
+                y += dy
+        yield x,y
 
-# load map
-for line in text.split("\n"):
-    items = [tuple(map(int, item.split(","))) for item in line.split(" -> ")]
-    print(items)
 
-    x, y = items[0]
+def simulate(mapa, limit, floor_on_limit):
+    x, y = 500, 0
 
-    for x2, y2 in items[1:]:
-        dx, dy = sgn(x2-x), sgn(y2-y)
-        while (x,y)!=(x2,y2):
-            mapa[(x,y)] = True
-            x +=dx
-            y+=dy
-        mapa[(x,y)] = True
+    while True:
+        if y == limit:
+            if not floor_on_limit: return False
+            break
 
-# simulate
-def simulate(mapa, maxy):
-    miny = min(y for x,y in mapa)
-    # maxy = max(y for x,y in mapa)
-
-    x, y = 500, miny - 2
-    while y < maxy + 5:
-        if y == maxy:
-            mapa[(x,y)] = True
-            return True
-        if (x,y+1) not in mapa:
-            y += 1
-        elif (x-1,y+1) not in mapa:
-            x-=1
-            y+=1
-        elif (x+1, y+1) not in mapa:
-            x+=1
-            y+=1
+        for dx in [0, -1, 1]:
+            if (x + dx, y + 1) not in mapa:
+                x, y = (x + dx, y + 1)
+                break
         else:
-            mapa[x,y] = True
-            return True
-    return False
+            break
+    
+    mapa.add((x,y))
+    return True
 
-ile = len(mapa)
-maxy = max(y for x,y in mapa)
-while simulate(mapa, maxy+1) and (500, 0) not in mapa:
-    pass
-ile2 = len(mapa)
 
-print(ile2-ile)
+text = open("input.txt").read()
+cave = set(parse_input(text))
+cave_copy = cave.copy()
+original_size = len(cave)
+limit = max(y for _, y in cave) + 1
+
+while simulate(cave, limit, False): pass
+print("a:", len(cave) - original_size)
+
+while (500, 0) not in cave_copy:
+    simulate(cave_copy, limit, True)
+print("b:", len(cave_copy) - original_size)
     
