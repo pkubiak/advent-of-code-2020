@@ -28,19 +28,49 @@ def print_board(board):
     print("-"*15)
     print()
 
-moves = cycle(open("input.txt").read().strip())
-blocks = cycle(blocks)
+moves = open("input.txt").read().strip()
+print(len(moves))
+# moves = cycle(text)
+# blocks = cycle(blocks)
+
+move_i = block_i = 0
 
 board = set()
+used= {}
+height = {}
+target = 1000000000000
+cycle_length = None
+cycle_height = 0
+i = 0
+while True:
+    height[i] = min([y for x,y in board] + [0])
+    if cycle_length and (target - i) % cycle_length == 0:
+        print(">>", cycle_length, cycle_height)
+        print(">>", height[i] + cycle_height * (target -i)//cycle_length)
+        break
+    
+    depths = [min([y for x,y in board if x==i]+[0]) for i in range(7)]
+    min_depth = min(depths)
+    depths = [i - min_depth for i in depths]
+    # print(depths)
+    key = (block_i, move_i, tuple(depths))
+    if key in used:
+        diff = i - used[key]
+        cycle_length = i - used[key]
+        cycle_height = height[i] - height[used[key]]
+        # break
+    used[key] = i
 
-for i in range(2022):
-    block = next(blocks)
+    block = blocks[block_i]
+    block_i = (block_i+1) % len(blocks)
+
     dy = min(y for x, y in board) if board else 0
     dx = 2
     block = move(block, dx, dy-4)
 
     while True:
-        dx = {">":1, "<":-1}[next(moves)]
+        dx = {">":1, "<":-1}[moves[move_i]]
+        move_i = (move_i+1)% len(moves)
         if can_move(board, block, dx, 0):
             block = move(block, dx, 0)
         if can_move(board, block, 0, 1):
@@ -48,6 +78,7 @@ for i in range(2022):
         else:
             board.update(block)
             break
+    i += 1
     # print(board)
     # print_board(board)
 
