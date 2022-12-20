@@ -1,4 +1,4 @@
-DIRS = [(-1,0,0),(1,0,0), (0,1,0),(0,-1,0), (0,0,1), (0,0,-1)]
+DIRS = [(-1, 0, 0),(1, 0, 0), (0, 1, 0),(0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
 def bfs(shape):
     minx = min(x for x,y,z in shape)-1
@@ -15,9 +15,9 @@ def bfs(shape):
         q, *queue = queue
         x,y,z = q
         for dx, dy, dz in DIRS:
-            p = x2,y2,z2 = x+dx, y+dy,z+dz
+            p = x2, y2, z2 = x + dx, y + dy, z + dz
             
-            if (minx<=x2<=maxx) and (miny<=y2<=maxy) and (minz <=z2<=maxz) and p not in shape and p not in visited:
+            if (minx<=x2<=maxx) and (miny<=y2<=maxy) and (minz <=z2<=maxz) and (p not in shape) and (p not in visited):
                 queue.append(p)
                 visited[p] = True
     return visited
