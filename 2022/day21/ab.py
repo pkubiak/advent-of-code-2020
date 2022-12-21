@@ -1,36 +1,31 @@
-text = open("input.txt").read()
+def calculate(values, key):
+    match values[key]:
+        case [a, op, b]:
+            a = calculate(values, a)
+            b = calculate(values, b)
+            return eval(f"a {op} b")
+        case x:
+            return x
 
-values, operations = {}, {}
-
-for line in text.split("\n"):
-    a, b = line.split(": ")
-    if b.isnumeric():
-        values[a] = int(b)
-    else:
-        operations[a] = b.split(" ")
-
-def calculate(values, operations):
-    values = dict(values)
-    operations = dict(operations)
-        
-    while operations:
-        for k in list(operations):
-            b, op, c = operations[k]
-            if b in values and c in values:
-                values[k] = eval(f"{values[b]} {op} {values[c]}")
-                del operations[k]
-                if k == 'root':
-                    return values[k]
 
 def check(value):
     values['humn'] = value
-    return calculate(values, operations)
+    return calculate(values, 'root')
+
+
+values = {}
+for line in open("input.txt"):
+    a, b = line.strip().split(": ")
+    if b.isnumeric():
+        values[a] = int(b)
+    else:
+        values[a] = b.split(" ")
 
 # part1
-print("a:", int(calculate(values, operations)))
+print("a:", int(calculate(values, 'root')))
 
 # part2
-operations['root'][1] = '-'
+values['root'][1] = '-'
 a, b = 0, 10000000000000
 assert (check(a) > 0) and (check(b) < 0)
 
